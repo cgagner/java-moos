@@ -33,7 +33,6 @@
  */
 package MOOS;
 
-import android.util.Log;
 
 import java.lang.String;
 import java.nio.ByteBuffer;
@@ -462,8 +461,8 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
      */
     public static void moosTrace(String s, Object... variables) {
 
-        Log.d(TAG, String.format(s, variables));
-//        System.out.printf(s, variables);
+        //Log.d(TAG, String.format(s, variables));
+        System.out.printf(s, variables);
     }
 
     /**

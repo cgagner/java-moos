@@ -37,6 +37,7 @@ package MOOS;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Currently no Zip compression is supported. It will throw an exception if a compressed packet is tried to decode.
@@ -110,7 +111,6 @@ public class MOOSCommPkt {
 
     /**
      * Once this method has been called, call serialise(list, false) or deSerialize() to use internal message list.
-     * @param packetData
      * @return size of data still required
      * @throws NoJavaZipCompressionSupportYetException
      */
@@ -163,7 +163,6 @@ public class MOOSCommPkt {
 
     /**
      * Convenience method to serialize from the list of messages held by this packet, or use deSerialize() to deserialise to the list of messages held by this packet.
-     * @param toStream
      * @return whether it succeeded
      */
     public boolean serialize() {
@@ -254,7 +253,7 @@ public class MOOSCommPkt {
 
     /**
      *  Replace the backing ByteBuffer with the selected one. Fill() should be called followed by deSerialize or serialize(messages, false)
-     * @param the ByteBuffer full of MOOS packet data.
+     * @param data the ByteBuffer full of MOOS packet data.
      */
     public void setBytes(ByteBuffer data) {
         this.resetFill();
@@ -263,14 +262,14 @@ public class MOOSCommPkt {
 
     /**
      *
-     * @return the List<MOOSMsg> which this packet holds.
+     * @return the List of {@link MOOSMsg} which this packet holds.
      */
     public ArrayList<MOOSMsg> getMsgList() {
         return msgList;
     }
 
     /**
-     * Serialize() should be called after this, serialize(List<MOOSMsg> list, true) instead.
+     * Serialize() should be called after this, serialize(List of {@link MOOSMsg} list, true) instead.
      * @param list of messages to put in this packet
      */
     public void setMsgList(ArrayList<MOOSMsg> list) {

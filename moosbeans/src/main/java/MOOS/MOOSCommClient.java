@@ -806,7 +806,7 @@ public class MOOSCommClient extends MOOSCommObject implements Runnable {
     }
 
     /**
-     * This fails silently. Must satisfy: 0 < frequency <= 100
+     * This fails silently. Must satisfy: 0 &lt; frequency &le; 100
      * @param frequency
      */
     public void setFundamentalFrequency(double frequency) {
