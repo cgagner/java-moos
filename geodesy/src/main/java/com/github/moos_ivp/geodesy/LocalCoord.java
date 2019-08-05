@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MOOS.geodesy;
+package com.github.moos_ivp.geodesy;
 
 /**
  *

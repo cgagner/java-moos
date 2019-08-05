@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MOOS.geodesy;
+package com.github.moos_ivp.geodesy;
 
+import com.github.moos_ivp.geodesy.LocalCoord;
+import com.github.moos_ivp.geodesy.GlobalCoord;
+import com.github.moos_ivp.geodesy.MOOSGeodesy;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
