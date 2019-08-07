@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.moos-ivp</groupId>
     <artifactId>moosbeans</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     
     <scm>
         <connection>scm:git:git://github.com/moos-ivp/java-moos.git</connection>
         <developerConnection>scm:git:git@github.com:moos-ivp/java-moos.git</developerConnection>
         <url>https://github.com/moos-ivp/java-moos</url>
-        <tag>HEAD</tag>
+        <tag>moosbeans-0.0.1</tag>
     </scm>
     
     <profiles>
