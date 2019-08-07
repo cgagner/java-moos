@@ -5,7 +5,27 @@
     <artifactId>moosbeans</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
+    
+    <name>MOOSBeans</name>
+    <url>http://com.github.com/moos-ivp/java-moos</url>
+    <description>Java connector for MOOS</description>
+    <licenses>
+      <license>
+        <name>GNU General Public License (GPL)</name>
+        <url>http://www.gnu.org/licenses/gpl.txt</url>
+      </license>
+    </licenses>
+    <developers>
+      <developer>
+         <id>cgagner</id>
+         <name>Christopher Gagner</name>
+         <email>christopher.gagner@gmail.com</email>
+         <roles>
+          <role>Project-Administrator</role>
+          <role>Developer</role>
+        </roles>
+      </developer>
+    </developers>
     <scm>
         <connection>scm:git:git://github.com/moos-ivp/java-moos.git</connection>
         <developerConnection>scm:git:git@github.com:moos-ivp/java-moos.git</developerConnection>
@@ -43,8 +63,9 @@
             </build>
         </profile>
     </profiles>
+    
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -198,9 +219,10 @@
                     </execution>
                 </executions>
             </plugin>
+            
         </plugins>
     </build>
-
+    
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
