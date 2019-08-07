@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.moos-ivp</groupId>
-    <artifactId>moosbeans</artifactId>
+    <artifactId>geodesy</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
-    <name>MOOSBeans</name>
+
+    <name>Geodesy</name>
     <url>http://com.github.com/moos-ivp/java-moos</url>
     <description>Java connector for MOOS</description>
     <licenses>
@@ -26,6 +26,7 @@
         </roles>
       </developer>
     </developers>
+
     <scm>
         <connection>scm:git:git://github.com/moos-ivp/java-moos.git</connection>
         <developerConnection>scm:git:git@github.com:moos-ivp/java-moos.git</developerConnection>
@@ -63,9 +64,8 @@
             </build>
         </profile>
     </profiles>
-    
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>        
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -219,10 +219,9 @@
                     </execution>
                 </executions>
             </plugin>
-            
         </plugins>
     </build>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -240,6 +239,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgeo</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
