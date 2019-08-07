@@ -33,18 +33,21 @@
  */
 package MOOS;
 
-import android.util.Log;
-
-import java.lang.String;
+import static MOOS.Utils.currentTime;
+import MOOS.comms.DataType;
+import MOOS.comms.MessageType;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *  This Class is a Java representation of the C++ (Double plus, increment, 
+ * This Class is a Java representation of the C++ (Double plus, increment,
  * whatever ...) MOOSMsg.cpp class. The C++ source was originally written by
- * Paul Newman.  This uses ByteBuffers to serialize and de-serialize data. These
+ * Paul Newman. This uses ByteBuffers to serialize and de-serialize data. These
  * buffers can then be written directly to a Socket.
- * 
+ *
  * This class extends the java.util.EventObject merely so that it is recognised
  * as a java Event. It doesn't need to all, but this lets us use it with the
  * java event passing system quite nicely.
@@ -52,32 +55,18 @@ import java.nio.ByteOrder;
  * @author Benjamin C. Davis
  *
  */
-public class MOOSMsg extends java.util.EventObject implements java.io.Serializable {
+public class MOOSMsg extends java.util.EventObject {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MOOSMsg.class);
 
     private static final long serialVersionUID = -3282121626645069536L; // needed for serializable interface - ignore.
-    public static final ByteOrder MOOS_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
+
     // Primitive type sizes in bytes.
     public static final int INT_SIZE_IN_BYTES = (Integer.SIZE / 8);
     public static final int BYTE_SIZE_IN_BYTES = (Byte.SIZE / 8);
     public static final int DOUBLE_SIZE_IN_BYTES = (Double.SIZE / 8);
-    // MESSAGE TYPES
-    public static final char MOOS_NOTIFY = 'N';
-    public static final char MOOS_REGISTER = 'R';
-    public static final char MOOS_UNREGISTER = 'U';
-    public static final char MOOS_NOT_SET = '~';
-    public static final char MOOS_COMMAND = 'C';
-    public static final char MOOS_ANONYMOUS = 'A';
-    public static final char MOOS_NULL_MSG = '.';
-    public static final char MOOS_DATA = 'i';
-    public static final char MOOS_POISON = 'K';
-    public static final char MOOS_WELCOME = 'W';
-    public static final char MOOS_SERVER_REQUEST = 'Q';
-    // MESSAGE DATA TYPES
-    public static final char MOOS_DOUBLE = 'D';
-    public static final char MOOS_STRING = 'S';
-    public static final char MOOS_BINARY_STRING = 'B';
     // EXTRA FIELDS
-    public static boolean DISABLE_AUX_SOURCE = false;
+    private static boolean DISABLE_AUX_SOURCE = false;
     //Allowable Skew tolerance between MOOSDB time and local time.
     public static final int SKEW_TOLERANCE = 5;
     // is MOOS in playback mode, i.e. is this a playback message
@@ -85,15 +74,25 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
     ////////////////////////
     // more fields from c++ with camel case name adjustment
     ////////////////////////
-    /**what type of message is this? Notification,Command,Register etc*/
-    protected char msgType;
-    /**what kind of data is this? String,Double,Array?*/
-    protected char dataType;
-    /**what is the variable name?*/
+    /**
+     * what type of message is this? Notification,Command,Register etc
+     */
+    protected MessageType msgType;
+    /**
+     * what kind of data is this? String,Double,Array?
+     */
+    protected DataType dataType;
+    /**
+     * what is the variable name?
+     */
     protected String varName;
-    /**ID of message*/
+    /**
+     * ID of message
+     */
     protected int msgID;
-    /** double precision time stamp (UNIX time)*/
+    /**
+     * double precision time stamp (UNIX time)
+     */
     protected double time;
     //DATA VARIABLES
     //a) numeric
@@ -112,20 +111,17 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
     // message length in bytes
     protected int msgLength;
 
-    //Tag for Android Logger
-    private static final String TAG = "MOOS";
-
     //////////////////////////////////////////////////////////////////////
     // Construction/Destruction
     //////////////////////////////////////////////////////////////////////
     /**
-     *  Default: Assumes MOOS_NULL_MSG, MOOS_DOUBLE, etc. Empty message.
-     * param src The source of this event, can be null
+     * Default: Assumes MOOS_NULL_MSG, MOOS_DOUBLE, etc. Empty message. param
+     * src The source of this event, can be null
      */
     public MOOSMsg() {
         super("MOOSMsg: The source is null! "); // call super(null) so that there is no event source to this message.
-        msgType = MOOS_NULL_MSG;
-        dataType = MOOS_DOUBLE;
+        this.msgType = MessageType.Null;
+        this.dataType = DataType.Double;
         time = -1;
         doubleData = -1;
         m_dfVal2 = -1;
@@ -134,91 +130,76 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
         sourceAuxInfo = "";
     }
 
-    public MOOSMsg(char cMsgType, String varName, double doubleData) {
-        this(cMsgType, varName, doubleData, -1);
+    public MOOSMsg(MessageType messageType, String varName, double doubleData) {
+        this(messageType, varName, doubleData, -1);
     }
 
-    public MOOSMsg(char cMsgType, String varName, double doubleData, double dfTime) {
+    public MOOSMsg(MessageType messageType, String varName, double doubleData, double dfTime) {
         super("MOOSMsg: The source is null! ");
-        msgType = cMsgType;
+        this.msgType = messageType;
+        this.dataType = DataType.Double;
         this.doubleData = doubleData;
         m_dfVal2 = -1;
-        dataType = MOOS_DOUBLE;
+
         this.varName = varName;
         time = dfTime;
         msgID = -1;
 
         if (dfTime == -1) {
-            time = moosTimeNow();
+            time = currentTime();
         } else {
             time = dfTime;
         }
     }
 
-    public MOOSMsg(char cMsgType, String varName, String stringData) {
-        this(cMsgType, varName, stringData, -1);
+    public MOOSMsg(MessageType messageType, String varName, String stringData) {
+        this(messageType, varName, stringData, -1);
     }
 
-    public MOOSMsg(char cMsgType, String varName, String stringData, double dfTime) {
+    public MOOSMsg(MessageType messageType, String varName, String stringData, double dfTime) {
         super("MOOSMsg: The source is null! ");
-        msgType = cMsgType;
+        this.msgType = messageType;
+        this.dataType = DataType.String;
         doubleData = -1;
         m_dfVal2 = -1;
-        dataType = MOOS_STRING;
         this.varName = varName;
         this.stringData = stringData;
         time = dfTime;
         msgID = -1;
 
         if (dfTime == -1) {
-            time = moosTimeNow();
+            time = currentTime();
         } else {
             time = dfTime;
         }
     }
 
-    public MOOSMsg(char cMsgType, String varName, byte[] binaryData) {
-        this(cMsgType, varName, binaryData, -1);
+    public MOOSMsg(MessageType messageType, String varName, byte[] binaryData) {
+        this(messageType, varName, binaryData, -1);
     }
 
-    public MOOSMsg(char cMsgType, String varName, byte[] binaryData, double dfTime) {
+    public MOOSMsg(MessageType messageType, String varName, byte[] binaryData, double dfTime) {
         super("MOOSMsg: The source is null! ");
-        msgType = cMsgType;
+        this.msgType = messageType;
+        this.dataType = DataType.Binary;
         doubleData = -1;
         m_dfVal2 = -1;
-        dataType = MOOS_BINARY_STRING;
         this.varName = varName;
         this.binaryData = binaryData;
         time = dfTime;
         msgID = -1;
 
         if (dfTime == -1) {
-            time = moosTimeNow();
+            time = currentTime();
         } else {
             time = dfTime;
         }
     }
 
     /**
-     * This is a helper function to ensure that we always read in the correct byte order. By default ByteBuffer is Big Endian which is contrary to Moos, so we always swap the buffer to little endian so we always read and transmit the correct data.
-     * @param size of buffer in bytes
-     * @return
-     */
-    public static ByteBuffer allocate(int size) {
-        return ByteBuffer.allocate(size).order(MOOS_BYTE_ORDER);
-    }
-
-    /**
-     * This takes the java epox time..
-     * @return unix time in seconds.
-     */
-    public static double moosTimeNow() {
-        return ((double) System.currentTimeMillis()) / 1000.0d;
-    }
-
-    /**
      *
-     * @param playback sets whether this message is a playback message, rather than a real one. default is false.
+     * @param playback sets whether this message is a playback message, rather
+     * than a real one. default is false.
      */
     public void setPlayback(boolean playback) {
         this.playback = playback;
@@ -229,7 +210,8 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
     }
 
     /**
-     * Whether Auxilary Src Data will be included in MOOSMsg. This is a Compile time flag in C++ and is usually set to false.
+     * Whether Auxilary Src Data will be included in MOOSMsg. This is a Compile
+     * time flag in C++ and is usually set to false.
      */
     public static void disableAUXSourceData() {
         DISABLE_AUX_SOURCE = true;
@@ -248,48 +230,87 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
      */
     /**
      * check data type (MOOS_STRING or MOOS_DOUBLE)
+     *
+     * @param dataType
+     * @return
      */
-    public boolean isDataType(char cDataType) {
-        return cDataType == dataType;
+    public boolean isDataType(DataType dataType) {
+        return this.dataType == dataType;
     }
 
-    /**check data type is double*/
+    /**
+     * check data type is doubl
+     *
+     * @return
+     */
     public boolean isDouble() {
-        return isDataType(MOOS_DOUBLE);
+        return isDataType(DataType.Double);
     }
 
-    /**check data type is string*/
+    /**
+     * check data type is strin
+     *
+     * @return
+     */
     public boolean isString() {
-        return isDataType(MOOS_STRING);
+        return isDataType(DataType.String);
     }
 
-    /**check message type MOOS_NOTIFY, REGISTER etc*/
-    public boolean isType(char cType) {
-        return this.msgType == cType;
+    public boolean isBinary() {
+        return isDataType(DataType.Binary);
     }
 
-    /**return time stamp of message*/
+    /**
+     * check message type MOOS_NOTIFY, REGISTER et
+     *
+     * @param messageType
+     * @return True if the type matches the specified message type
+     */
+    public boolean isType(MessageType messageType) {
+        return this.msgType == messageType;
+    }
+
+    /**
+     * return time stamp of messag
+     *
+     * @return
+     */
     public double getTime() {
         return time;
     }
 
-    /**return double val of message*/
+    /**
+     * return double val of messag
+     *
+     * @return
+     */
     public double getDoubleData() {
         return doubleData;
     }
 
-    /**return string value of message*/
+    /**
+     * return string value of messag
+     *
+     * @return
+     */
     public String getStringData() {
         return stringData;
     }
 
-    /**return the name of the message*/
+    /**
+     * return the name of the messag
+     *
+     * @return
+     */
     public String getKey() {
         return varName;
     }
 
-    /**return the name of the process (as registered with the DB) which
-    posted this notification*/
+    /**
+     * @return the name of the process (as registered with the DB) which posted
+     * this notification
+     */
+    @Override
     public String getSource() {
         return source;
     }
@@ -306,19 +327,27 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
         sourceAuxInfo = sSrcAux;
     }
 
-    /**return the name of the MOOS community in which the originator lives*/
+    /**
+     * return the name of the MOOS community in which the originator live
+     *
+     * @return s
+     */
     public String getCommunity() {
         return community;
     }
 
-    /** set the Double value */
+    /**
+     * set the Double value
+     *
+     * @param dfD
+     */
     public void setDoubleData(double dfD) {
         doubleData = dfD;
     }
 
     /**
      *
-     * @return length in bytes if were serialised
+     * @return length in bytes if were serialized
      */
     public int getSizeInBytesWhenSerialised() {
         int sourceLength = 0;
@@ -334,7 +363,7 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
             varNameLength = varName.getBytes().length;
         }
         int stringDataLength = 0;
-        if (this.dataType == this.MOOS_BINARY_STRING && binaryData != null) {
+        if (isBinary() && binaryData != null) {
             stringDataLength = binaryData.length;
         } else if (stringData != null) {
             stringDataLength = stringData.getBytes().length;
@@ -361,7 +390,9 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
     }
 
     /**
-     * This function writes a string with an integer representing its length preceeding the string bytes to the supplied ByteBuffer
+     * This function writes a string with an integer representing its length
+     * preceeding the string bytes to the supplied ByteBuffer
+     *
      * @param msgBuffer
      * @param s
      */
@@ -375,26 +406,33 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
     }
 
     /**
-     * This reads the integer length value and then reads the remaining length n bytes into a String object
+     * This reads the integer length value and then reads the remaining length n
+     * bytes into a String object
+     *
      * @param msgBuffer
      * @return Returns the next String from the ByteBuffer
      */
     protected String getString(ByteBuffer msgBuffer) {
         int length = msgBuffer.getInt();
-        if (length > 0) {
+        if (length > 0 && length <= msgBuffer.remaining()) {
             byte[] charData = new byte[length];
             binaryData = charData; // always update the binaryData - ends up being the last bit of stringData if it is binary anyway.
             msgBuffer.get(charData);
             return new String(charData);
         } else {
-            return new String(); // decided that returning the empty string may cause problems...
+            return ""; // decided that returning the empty string may cause problems...
         }
     }
 
     /**
-     * This method never calls rewind on the passed ByteBuffer, only reads or writes to it from its current position. This method assumes that the buffer is big enough and has been creates as such by a moos packet.
+     * This method never calls rewind on the passed ByteBuffer, only reads or
+     * writes to it from its current position. This method assumes that the
+     * buffer is big enough and has been creates as such by a moos packet.
+     *
      * @param msgBuffer The ByteBuffer to serialise the message to/from
-     * @param toStream whether to serialise the contents of this message into the supplied ByteBuffer or to populate this message from the supplied ByteBuffer
+     * @param toStream whether to serialise the contents of this message into
+     * the supplied ByteBuffer or to populate this message from the supplied
+     * ByteBuffer
      * @return
      */
     public int serialize(ByteBuffer msgBuffer, boolean toStream) {
@@ -403,8 +441,8 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
             msgLength = this.getSizeInBytesWhenSerialised();
             msgBuffer.putInt(msgLength);
             msgBuffer.putInt(this.msgID);
-            msgBuffer.put(String.valueOf(this.msgType).getBytes()[0]);
-            msgBuffer.put(String.valueOf(this.dataType).getBytes()[0]);
+            msgBuffer.put(this.msgType.getValue());
+            msgBuffer.put(this.dataType.getValue());
 
             putString(msgBuffer, source);
 
@@ -419,18 +457,22 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
             msgBuffer.putDouble(doubleData);
             msgBuffer.putDouble(m_dfVal2);
 
-            if (this.dataType == this.MOOS_BINARY_STRING) {
+            if (isBinary()) {
                 msgBuffer.putInt(binaryData.length).put(binaryData);
             } else {
                 putString(msgBuffer, stringData);
             }
 
-
         } else {
             this.msgLength = msgBuffer.getInt();
             this.msgID = msgBuffer.getInt();
-            this.msgType = new String(new byte[]{msgBuffer.get()}).charAt(0);
-            this.dataType = new String(new byte[]{msgBuffer.get()}).charAt(0);
+            try {
+                this.msgType = MessageType.fromByte(msgBuffer.get());
+                this.dataType = DataType.fromByte(msgBuffer.get());
+            } catch (Exception ex) {
+                /// @todo Hanlde the Exception
+                LOG.error("Failed to parse message or data type.", ex);
+            }
 
             this.source = this.getString(msgBuffer);
 
@@ -455,49 +497,22 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
         return msgLength;
     }
 
-    /**
-     * Originally an overload of System.printf(...). Modified to be overload of Android Log.d
-     * @param s
-     * @param variables
-     */
-    public static void moosTrace(String s, Object... variables) {
-
-        Log.d(TAG, String.format(s, variables));
-//        System.out.printf(s, variables);
-    }
-
-    /**
-     *  This prints to the standard out the contents of the message
-     */
-    public void trace() {
-
-        moosTrace("Type=%c DataType=%c Key=%s ", msgType, dataType, varName);
-
-        switch (dataType) {
-            case MOOS_DOUBLE:
-                moosTrace("Data=%f ", doubleData);
-                break;
-            case MOOS_STRING:
-                moosTrace("Data=%s ", stringData);
-                break;
-        }
-
-
-        moosTrace("Source=%s Time =%10.3f\n", source, time);
-    }
-
     public boolean isYoungerThan(double dfAge) {
         return time >= dfAge;
     }
 
     /**
-     *A method to check the timestamping of a MOOSMsg.
-     *Does so by checking the <code>TimeNow</code> passed to it, and gives the
-     *requesting class an idea about how out of sync this message is by comparing the
-     *MOOSMsg's time stamp (<code>m_dfTime</code>) to SKEW_TOLERANCE.
-     *@return true if a MOOSMsg's time stamp is either SKEW_TOLERANCE seconds ahead or
-     *behind the MOOSDB clock.  Will also pass you the <code>pdfSkew</code>, or amount of
-     *time difference between the MOOSDB and MOOSMsg timestamp if desired.
+     * A method to check the timestamping of a MOOSMsg. Does so by checking the
+     * <code>TimeNow</code> passed to it, and gives the requesting class an idea
+     * about how out of sync this message is by comparing the MOOSMsg's time
+     * stamp (<code>m_dfTime</code>) to SKEW_TOLERANCE.
+     *
+     * @param dfTimeNow
+     * @param pdfSkew
+     * @return true if a MOOSMsg's time stamp is either SKEW_TOLERANCE seconds
+     * ahead or behind the MOOSDB clock. Will also pass you the
+     * <code>pdfSkew</code>, or amount of time difference between the MOOSDB and
+     * MOOSMsg timestamp if desired.
      */
     public boolean isSkewed(double dfTimeNow, Double pdfSkew) {
         //if we are in playback mode (a global app wide flag)
@@ -506,15 +521,13 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
             dfTimeNow = time;
         }
 
-        double dfSkew = Math.abs(dfTimeNow - time);
-        pdfSkew = dfSkew;
-        return (dfSkew > SKEW_TOLERANCE) ? true : false;
+        pdfSkew = Math.abs(dfTimeNow - time);
+        return (pdfSkew > SKEW_TOLERANCE);
     }
 
     public String getAsString(int nFieldWidth/*=12*/, int nNumDP/*=5*/) {
         if (getTime() != -1) {
-            if (isDataType(MOOS_DOUBLE)) {
-
+            if (isDouble()) {
                 return "" + doubleData;
             } else {
                 return stringData;
@@ -566,24 +579,9 @@ public class MOOSMsg extends java.util.EventObject implements java.io.Serializab
         this.binaryData = binaryData;
     }
 
-    public String strTrace() {
-
-        String trace=new String();
-
-        trace+=String.format("Type=%c DataType=%c Key=%s ", msgType, dataType, varName);
-
-        switch (dataType) {
-            case MOOS_DOUBLE:
-                trace+=String.format("Data=%f ", doubleData);
-                break;
-            case MOOS_STRING:
-                trace+=String.format("Data=%s ", stringData);
-                break;
-        }
-
-
-        trace+=String.format("Source=%s Time =%10.3f\n", source, time);
-
-        return(trace);
+    @Override
+    public String toString() {
+        NumberFormat formatter = new DecimalFormat("#0.000");
+        return "MOOSMsg{" + "playback=" + playback + ", msgType=" + msgType + ", dataType=" + dataType + ", varName=" + varName + ", msgID=" + msgID + ", time=" + formatter.format(time) + ", doubleData=" + formatter.format(doubleData) + ", m_dfVal2=" + m_dfVal2 + ", stringData=" + stringData + ", source=" + source + ", sourceAuxInfo=" + sourceAuxInfo + ", community=" + community + ", msgLength=" + msgLength + '}';
     }
 }
