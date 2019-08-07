@@ -31,11 +31,11 @@
  *
  *                      END_GPL
  */
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
-import static MOOS.Utils.currentTime;
-import MOOS.comms.DataType;
-import MOOS.comms.MessageType;
+import static com.github.moos_ivp.moosbeans.Utils.currentTime;
+import com.github.moos_ivp.moosbeans.comms.DataType;
+import com.github.moos_ivp.moosbeans.comms.MessageType;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

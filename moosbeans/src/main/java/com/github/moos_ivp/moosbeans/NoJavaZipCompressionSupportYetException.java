@@ -32,7 +32,7 @@
 *                      END_GPL   
 */
 
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
 /**
  *

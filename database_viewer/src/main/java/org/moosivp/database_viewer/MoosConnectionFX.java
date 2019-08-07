@@ -1,7 +1,7 @@
 package org.moosivp.database_viewer;
 
-import MOOS.MOOSCommClient;
-import MOOS.MoosMessageHandler;
+import com.github.moos_ivp.moosbeans.MOOSCommClient;
+import com.github.moos_ivp.moosbeans.MoosMessageHandler;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.application.Platform;

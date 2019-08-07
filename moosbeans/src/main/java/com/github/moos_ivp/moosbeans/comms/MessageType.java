@@ -1,4 +1,4 @@
-package MOOS.comms;
+package com.github.moos_ivp.moosbeans.comms;
 
 public enum MessageType {
     Null((byte) '.'),

@@ -31,7 +31,7 @@
 *
 *                      END_GPL   
  */
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

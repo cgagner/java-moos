@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

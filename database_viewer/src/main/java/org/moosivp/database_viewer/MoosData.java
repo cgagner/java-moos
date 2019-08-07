@@ -1,6 +1,6 @@
 package org.moosivp.database_viewer;
 
-import MOOS.MOOSMsg;
+import com.github.moos_ivp.moosbeans.MOOSMsg;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;

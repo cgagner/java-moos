@@ -1,6 +1,6 @@
 package org.moosivp.database_viewer;
 
-import MOOS.MOOSMsg;
+import com.github.moos_ivp.moosbeans.MOOSMsg;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

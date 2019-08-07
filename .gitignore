@@ -1,3 +1,5 @@
+/target/
+/database_viewer/target/
 /moosbeans/target/
 /simplest_example/target/
 /geodesy/target/

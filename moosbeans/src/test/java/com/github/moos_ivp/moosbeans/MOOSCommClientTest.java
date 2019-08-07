@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
-import MOOS.comms.MessageType;
+import com.github.moos_ivp.moosbeans.comms.MessageType;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

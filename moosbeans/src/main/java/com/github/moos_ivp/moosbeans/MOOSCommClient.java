@@ -31,9 +31,9 @@
  *
  *                      END_GPL
  */
-package MOOS;
+package com.github.moos_ivp.moosbeans;
 
-import MOOS.comms.MessageType;
+import com.github.moos_ivp.moosbeans.comms.MessageType;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;

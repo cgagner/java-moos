@@ -1,7 +1,7 @@
 package com.github.moos_ivp.simplest_exmaple;
 
-import MOOS.MOOSCommClient;
-import MOOS.MOOSMsg;
+import com.github.moos_ivp.moosbeans.MOOSCommClient;
+import com.github.moos_ivp.moosbeans.MOOSMsg;
 import java.util.ArrayList;
 
 /**
