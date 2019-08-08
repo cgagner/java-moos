@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.moos-ivp</groupId>
     <artifactId>geodesy</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Geodesy</name>
@@ -31,7 +31,7 @@
         <connection>scm:git:git://github.com/moos-ivp/java-moos.git</connection>
         <developerConnection>scm:git:git@github.com:moos-ivp/java-moos.git</developerConnection>
         <url>https://github.com/moos-ivp/java-moos</url>
-        <tag>geodesy-0.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
     
     <profiles>
